@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+import java.time.LocalDateTime;
+
 @Service
 public class AppointmentService {
 
@@ -17,6 +19,13 @@ public class AppointmentService {
     }
 
     public Appointment saveAppointment(Appointment appointment) {
+        // 🔎 Verificação de conflito
+    	if (appointmentRepository.existsByEmployee_IdAndDateTime(
+    	        appointment.getEmployee().getId(),
+    	        appointment.getDateTime())) {
+    	    throw new RuntimeException("Já existe um agendamento para esse horário e funcionário.");
+    	}
+
         return appointmentRepository.save(appointment);
     }
 
@@ -28,3 +37,4 @@ public class AppointmentService {
         return appointmentRepository.findById(id);
     }
 }
+
